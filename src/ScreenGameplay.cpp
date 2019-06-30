@@ -33,6 +33,8 @@
 #include "Course.h"
 #include "Inventory.h"
 
+#include "discord_rpc.h"
+
 //
 // Defines
 //
@@ -858,6 +860,14 @@ void ScreenGameplay::LoadNextSong()
 	GAMESTATE->SetSongInProgress( GAMESTATE->m_pCurSong->GetSongDir() ); //song simfile dir
 	GAMESTATE->HTTPBroadcastSongInProgress();
 	STATSMAN->m_CurStageStats.vpPlayedSongs.push_back( GAMESTATE->m_pCurSong );
+
+	// Discord RPC
+	DiscordRichPresence presence;
+	memset(&presence, 0, sizeof(presence));
+	presence.state = GAMESTATE->m_pCurSong->m_sMainTitle;
+	presence.details = "In Game";
+	presence.largeImageKey = "cowitg";
+	Discord_UpdatePresence(&presence);
 
 	// No need to do this here.  We do it in SongFinished().
 	//GAMESTATE->RemoveAllActiveAttacks();

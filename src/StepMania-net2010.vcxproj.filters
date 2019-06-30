@@ -88,6 +88,9 @@
     <Filter Include="Special I/O\iButton">
       <UniqueIdentifier>{d1e0ead5-46be-415c-a80b-dc3b0660bffa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Discord">
+      <UniqueIdentifier>{bb63645f-c891-4a09-b4dd-b4714a7827db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Screen.cpp">
@@ -2786,6 +2789,12 @@
     <ClInclude Include="io\MiniMaid.h" />
     <ClInclude Include="arch\InputHandler\InputHandler_MiniMaid.h" />
     <ClInclude Include="HTTPHelper.h" />
+    <ClInclude Include="discord-rpc\include\discord_register.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord-rpc\include\discord_rpc.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="archutils\Win32\StepMania.ico">

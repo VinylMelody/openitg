@@ -16,6 +16,8 @@
 #include "ScreenOptionsMasterPrefs.h"
 #include "ProductInfo.h"
 
+#include "discord_rpc.h"
+
 #define MAX_STAGES_TEXT				THEME->GetMetric (m_sName,"MaxStagesText")
 #define COIN_MODE_CHANGE_SCREEN		THEME->GetMetric (m_sName,"CoinModeChangeScreen")
 
@@ -96,6 +98,13 @@ void ScreenTitleMenu::Init()
 	this->SortByDrawOrder();
 
 	SOUND->PlayOnceFromAnnouncer( "title menu game name" );
+
+	// Discord RPC
+	DiscordRichPresence presence;
+	memset(&presence, 0, sizeof(presence));
+	presence.details = "Idle";
+	presence.largeImageKey = "cowitg";
+	Discord_UpdatePresence(&presence);
 }
 
 ScreenTitleMenu::~ScreenTitleMenu()

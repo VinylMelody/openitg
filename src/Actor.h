@@ -140,11 +140,11 @@ public:
 	void  SetBaseRotation( const RageVector3 &rot )	{ m_baseRotation = rot; }
 	virtual void  SetBaseAlpha( float fAlpha )	{ m_fBaseAlpha = fAlpha; }
 
-
-	float GetZoom()					{ return DestTweenState().scale.x; }	// not accurate in some cases
-	float GetZoomX()				{ return DestTweenState().scale.x; }
-	float GetZoomY()				{ return DestTweenState().scale.y; }
-	float GetZoomZ()				{ return DestTweenState().scale.z; }
+	// changed zome DestTweenState() to m_current
+	float GetZoom()					{ return m_current.scale.x; }	// not accurate in some cases
+	float GetZoomX()				{ return m_current.scale.x; }
+	float GetZoomY()				{ return m_current.scale.y; }
+	float GetZoomZ()				{ return m_current.scale.z; }
 	void  SetZoom( float zoom )		{ DestTweenState().scale.x = zoom;	DestTweenState().scale.y = zoom; }
 	void  SetZoomX( float zoom )	{ DestTweenState().scale.x = zoom;	}
 	void  SetZoomY( float zoom )	{ DestTweenState().scale.y = zoom; }
@@ -153,9 +153,9 @@ public:
 	void  ZoomToWidth( float zoom )	{ SetZoomX( zoom / GetUnzoomedWidth() ); }
 	void  ZoomToHeight( float zoom ){ SetZoomY( zoom / GetUnzoomedHeight() ); }
 
-	float GetRotationX()			{ return DestTweenState().rotation.x; }
-	float GetRotationY()			{ return DestTweenState().rotation.y; }
-	float GetRotationZ()			{ return DestTweenState().rotation.z; }
+	float GetRotationX()			{ return m_current.rotation.x; }
+	float GetRotationY()			{ return m_current.rotation.y; }
+	float GetRotationZ()			{ return m_current.rotation.z; }
 	void  SetRotationX( float rot )	{ DestTweenState().rotation.x = rot; }
 	void  SetRotationY( float rot )	{ DestTweenState().rotation.y = rot; }
 	void  SetRotationZ( float rot )	{ DestTweenState().rotation.z = rot; }
@@ -340,6 +340,7 @@ public:
 	//
 	virtual void PushSelf( lua_State *L );
 	void AddCommand( const CString &sCmdName, apActorCommands apac );
+	void RemoveCommand( const CString &sCmdName );
 	bool HasCommand( const CString &sCmdName );
 	const apActorCommands& GetCommand( const CString &sCommandName ) const;
 	virtual void PlayCommand( const CString &sCommandName, Actor *pParent = NULL );
@@ -356,6 +357,8 @@ public:
 	//
 	void SubscribeToMessage( Message message ); // will automatically unsubscribe
 	void SubscribeToMessage( const CString &sMessageName ); // will automatically unsubscribe
+	void UnsubscribeToMessage(Message message);
+	void UnsubscribeToMessage(const CString &sMessageName);
 	virtual void HandleMessage( const CString& sMessage );
 
 
@@ -574,6 +577,7 @@ public:
 	static int playcommand( T* p, lua_State *L )		{ p->PlayCommand(SArg(1),NULL); return 0; }
 	static int queuecommand( T* p, lua_State *L )		{ p->QueueCommand(SArg(1)); return 0; }
 	static int queuemessage( T* p, lua_State *L )		{ p->QueueMessage(SArg(1)); return 0; }
+	static int removecommand(T* p, lua_State *L)		{ p->RemoveCommand(SArg(1)); return 0; }
 	static int addcommand( T* p, lua_State *L )
 	{
 		LuaReference *pRef = new LuaReference;
@@ -581,7 +585,8 @@ public:
 		p->AddCommand( SArg(1), apActorCommands(pRef) );
 		return 0;
 	}
-
+	
+	static int hascommand( T* p, lua_State *L)		{ lua_pushboolean( L, p->HasCommand(SArg(1)) ); return 1; } // :^)
 	static int GetName( T* p, lua_State *L )		{ lua_pushstring( L, p->GetName() ); return 1; }
 	static int GetX( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetX() ); return 1; }
 	static int GetY( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetY() ); return 1; }
@@ -704,6 +709,8 @@ public:
 		ADD_METHOD( queuecommand )
 		ADD_METHOD( queuemessage )
 		ADD_METHOD( addcommand )
+		ADD_METHOD( hascommand )
+		ADD_METHOD( removecommand )
 		ADD_METHOD( position )
 
 		ADD_METHOD( GetX )

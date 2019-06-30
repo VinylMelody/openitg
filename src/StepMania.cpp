@@ -59,6 +59,8 @@
 #include "StatsManager.h"
 #include "UserPackManager.h"
 
+#include "discord_rpc.h"
+
 // XXX: for I/O error reports
 #if !defined(XBOX)
 #include "io/ITGIO.h"
@@ -408,8 +410,6 @@ static void CheckSettings()
 #endif
 
 #include "RageDisplay_Null.h"
-
-
 
 struct VideoCardDefaults
 {
@@ -1218,6 +1218,27 @@ int main(int argc, char* argv[])
 
 	PREFSMAN->SaveGlobalPrefsToDisk();
 	SaveGamePrefsToDisk();
+
+	// Run Discord RPC
+	DiscordEventHandlers handlers;
+	memset(&handlers, 0, sizeof(handlers));
+	handlers.ready = [](const DiscordUser* conUser) {
+		LOG->Info("[Discord] Connected as (%s)", conUser->username);
+	};
+	handlers.disconnected = [](int errCode, const char* message) {
+		LOG->Info("[Discord] Disconnected (%d: %s)", errCode, message);
+	};
+	handlers.errored = [](int errCode, const char* message) {
+		LOG->Info("[Discord] Error (%d: %s)", errCode, message);
+	};
+	Discord_Initialize("445101504546734080", &handlers, 1, NULL);
+
+	// Update Presence
+	DiscordRichPresence presence;
+	memset(&presence, 0, sizeof(presence));
+	presence.details = "Just started";
+	presence.largeImageKey = "cowitg";
+	Discord_UpdatePresence(&presence);
     
 	/* Run the main loop. */
 	GameLoop();
@@ -1619,6 +1640,8 @@ static void GameLoop()
 			usleep( 1000 );	// give some time to other processes and threads
 #endif
 	}
+
+	Discord_Shutdown();
 
 	GAMESTATE->EndGame();
 }

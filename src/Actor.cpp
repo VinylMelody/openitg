@@ -1106,6 +1106,26 @@ void Actor::AddCommand( const CString &sCmdName, apActorCommands apac )
 	}
 }
 
+void Actor::RemoveCommand( const CString &sCmdName )
+{
+	if (!HasCommand(sCmdName))
+	{
+		CString sWarning = m_sName + "'s command '" + sCmdName + "' is not defined";
+		Dialog::OK(sWarning, "COMMAND_DEFINED_TWICE");
+	}
+
+	CString sMessage;
+	if (GetMessageNameFromCommandName(sCmdName, sMessage))
+	{
+		UnsubscribeToMessage(sMessage);
+		m_mapNameToCommands.erase(sMessage);	// sCmdName w/o "Message" at the end
+	}
+	else
+	{
+		m_mapNameToCommands.erase(sCmdName);
+	}
+}
+
 bool Actor::HasCommand( const CString &sCmdName )
 {
 	map<CString, apActorCommands>::const_iterator it = m_mapNameToCommands.find( sCmdName );
@@ -1144,6 +1164,22 @@ void Actor::SubscribeToMessage( Message message )
 {
 	MESSAGEMAN->Subscribe( this, message );
 	m_vsSubscribedTo.push_back( MessageToString(message) );
+}
+
+// unsub yt videos lmao
+void Actor::UnsubscribeToMessage( const CString &sMessageName )
+{
+	MESSAGEMAN->Unsubscribe( this, sMessageName );
+	auto pos = find(m_vsSubscribedTo.begin(), m_vsSubscribedTo.end(), sMessageName);
+	if (pos != m_vsSubscribedTo.end())
+		m_vsSubscribedTo.erase(pos);
+}
+void Actor::UnsubscribeToMessage( Message message )
+{
+	MESSAGEMAN->Unsubscribe( this, message );
+	auto pos = find( m_vsSubscribedTo.begin(), m_vsSubscribedTo.end(), MessageToString(message) );
+	if (pos != m_vsSubscribedTo.end())
+		m_vsSubscribedTo.erase(pos);
 }
 
 /*

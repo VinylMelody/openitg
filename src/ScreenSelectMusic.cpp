@@ -20,6 +20,8 @@
 #include "MemoryCardManager.h" 
 #include "AnnouncerManager.h"
 
+#include "discord_rpc.h"
+
 // XXX: compatibility hackery for custom song text
 #include "DiagnosticsUtil.h"
 #include "FontCharAliases.h"
@@ -117,6 +119,13 @@ void ScreenSelectMusic::Init()
 	m_bSelectIsDown = false; // used by LoadHelpText which is called by ScreenWithMenuElements::Init()
 
 	ScreenWithMenuElements::Init();
+
+	// Discord RPC
+	DiscordRichPresence presence;
+	memset(&presence, 0, sizeof(presence));
+	presence.details = "Selecting Music...";
+	presence.largeImageKey = "cowitg";
+	Discord_UpdatePresence(&presence);
 
 	m_DisplayMode = GAMESTATE->IsCourseMode() ? DISPLAY_COURSES : DISPLAY_SONGS;
 
@@ -395,6 +404,7 @@ void ScreenSelectMusic::Init()
 		}
 	}
 #endif
+
 }
 
 

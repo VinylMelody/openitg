@@ -33,6 +33,8 @@
 #include "CommonMetrics.h"
 #include "ScoreKeeperMAX2.h"
 
+#include "discord_rpc.h"
+
 const int NUM_SCORE_DIGITS	=	9;
 
 
@@ -180,6 +182,12 @@ void ScreenEvaluation::Init()
 	GAMESTATE->CommitStageStats();
 
 	ScreenWithMenuElements::Init();
+
+	DiscordRichPresence presence;
+	memset(&presence, 0, sizeof(presence));
+	presence.details = "At Evaluation Screen";
+	presence.largeImageKey = "cowitg";
+	Discord_UpdatePresence(&presence);
 
 	LIGHTSMAN->SetLightsMode( LIGHTSMODE_MENU );
 
