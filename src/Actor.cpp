@@ -237,7 +237,9 @@ void Actor::BeginDraw()		// set the world matrix and calculate actor properties
 
 	// Somthing below may set m_pTempState to m_tempState
 	m_pTempState = &m_current;
+	m_pEffectState = &m_current;
 
+	m_pEffectState = &m_current;
 
 	//
 	// set temporary drawing properties based on Effects 
@@ -377,6 +379,7 @@ void Actor::BeginDraw()		// set the world matrix and calculate actor properties
 		}
 	}
 
+	m_pEffectState = &m_tempState;
 
 	if( m_fBaseAlpha != 1 )
 	{

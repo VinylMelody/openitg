@@ -102,7 +102,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='FastDebug|Win32'">$(SolutionDir)/build-vs2015/$(ProjectName)/$(Configuration)/</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='FastDebug|Win32'">true</LinkIncremental>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\extern\ffmpeg-build\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\extern\ffmpeg-build\bin;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\extern\ffmpeg-build\bin;$(LibraryPath);$(DXSDK_DIR)Lib\x86;$(ProjectDir)\discord-rpc\lib</LibraryPath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='FastDebug|Win32'">$(ProjectDir)\..\extern\ffmpeg-build\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='FastDebug|Win32'">$(ProjectDir)\..\extern\ffmpeg-build\bin;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)\..\extern\ffmpeg-build\include;$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
@@ -130,7 +130,7 @@
     <ClCompile>
       <Optimization>
       </Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);vorbis;libjpeg;lua-5.0\include;libusb\include;BaseClasses;libtomcrypt\src\headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);vorbis;libjpeg;lua-5.0\include;libusb\include;BaseClasses;libtomcrypt\src\headers;discord-rpc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>HAVE_FFMPEG</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
@@ -165,7 +165,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 "$(IntDir)verstub.obj" </AdditionalOptions>
-      <AdditionalDependencies>avcodec.lib;avformat.lib;avutil.lib;swscale.lib;libusb.lib;shell32.lib;gdi32.lib;user32.lib;ole32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>avcodec.lib;avformat.lib;avutil.lib;swscale.lib;libusb.lib;shell32.lib;gdi32.lib;user32.lib;ole32.lib;advapi32.lib;discord-rpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)/$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>libusb\lib\msvc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

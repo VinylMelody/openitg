@@ -110,6 +110,26 @@ public:
 	float GetDestX()				{ return DestTweenState().pos.x; };
 	float GetDestY()				{ return DestTweenState().pos.y; };
 	float GetDestZ()				{ return DestTweenState().pos.z; };
+
+	float GetEffectX() const {
+		return ( GetEffect() == bob || GetEffect() == bounce || GetEffect() == vibrate ) ? (*m_pEffectState).pos.x : GetX();
+	};
+	float GetEffectY() const {
+		return ( GetEffect() == bob || GetEffect() == bounce || GetEffect() == vibrate ) ? (*m_pEffectState).pos.y : GetY();
+	};
+	float GetEffectZ() const {
+		return ( GetEffect() == bob || GetEffect() == bounce || GetEffect() == vibrate ) ? (*m_pEffectState).pos.z : GetZ();
+	};
+	float GetEffectRotationX() const {
+		return ( GetEffect() == wag || GetEffect() == spin ) ? (*m_pEffectState).rotation.x : GetRotationX();
+	};
+	float GetEffectRotationY() const {
+		return ( GetEffect() == wag || GetEffect() == spin ) ? (*m_pEffectState).rotation.y : GetRotationY();
+	};
+	float GetEffectRotationZ() const {
+		return ( GetEffect() == wag || GetEffect() == spin ) ? (*m_pEffectState).rotation.z : GetRotationZ();
+	};
+
 	void  SetX( float x )			{ DestTweenState().pos.x = x; };
 	void  SetY( float y )			{ DestTweenState().pos.y = y; };
 	void  SetZ( float z )			{ DestTweenState().pos.z = z; };
@@ -153,9 +173,9 @@ public:
 	void  ZoomToWidth( float zoom )	{ SetZoomX( zoom / GetUnzoomedWidth() ); }
 	void  ZoomToHeight( float zoom ){ SetZoomY( zoom / GetUnzoomedHeight() ); }
 
-	float GetRotationX()			{ return m_current.rotation.x; }
-	float GetRotationY()			{ return m_current.rotation.y; }
-	float GetRotationZ()			{ return m_current.rotation.z; }
+	float GetRotationX() const		{ return m_current.rotation.x; }
+	float GetRotationY() const		{ return m_current.rotation.y; }
+	float GetRotationZ() const		{ return m_current.rotation.z; }
 	void  SetRotationX( float rot )	{ DestTweenState().rotation.x = rot; }
 	void  SetRotationY( float rot )	{ DestTweenState().rotation.y = rot; }
 	void  SetRotationZ( float rot )	{ DestTweenState().rotation.z = rot; }
@@ -402,6 +422,7 @@ protected:
 	//
 	TweenState m_tempState;
 	TweenState *m_pTempState;
+	TweenState *m_pEffectState;
 
 	bool	m_bFirstUpdate;
 
@@ -591,6 +612,9 @@ public:
 	static int GetX( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetX() ); return 1; }
 	static int GetY( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetY() ); return 1; }
 	static int GetZ( T* p, lua_State *L )			{ lua_pushnumber( L, p->GetZ() ); return 1; }
+	static int GetEffectX( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetEffectX() ); return 1; }
+	static int GetEffectY( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetEffectY() ); return 1; }
+	static int GetEffectZ( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetEffectZ() ); return 1; }
 	static int GetWidth( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetUnzoomedWidth() ); return 1; }
 	static int GetHeight( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetUnzoomedHeight() ); return 1; }
 	static int GetZoom( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetZoom() ); return 1; }
@@ -600,6 +624,9 @@ public:
 	static int GetBaseZoomX( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetBaseZoomX() ); return 1; }
 	static int GetSecsIntoEffect( T* p, lua_State *L )	{ lua_pushnumber( L, p->GetSecsIntoEffect() ); return 1; }
 	static int GetEffectDelta( T* p, lua_State *L )		{ lua_pushnumber( L, p->GetEffectDelta() ); return 1; }
+	static int GetEffectRotationX( T* p, lua_State * L) { lua_pushnumber( L, p->GetEffectRotationX() ); return 1; }
+	static int GetEffectRotationY( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationY() ); return 1; }
+	static int GetEffectRotationZ( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationZ() ); return 1; }
 
 
 	static void Register(lua_State *L) {
@@ -716,6 +743,12 @@ public:
 		ADD_METHOD( GetX )
 		ADD_METHOD( GetY )
 		ADD_METHOD( GetZ )
+		ADD_METHOD( GetEffectX )
+		ADD_METHOD( GetEffectY )
+		ADD_METHOD( GetEffectZ )
+		ADD_METHOD( GetEffectRotationX )
+		ADD_METHOD( GetEffectRotationY )
+		ADD_METHOD( GetEffectRotationZ )
 		ADD_METHOD( GetWidth )
 		ADD_METHOD( GetHeight )
 		ADD_METHOD( GetZoom )
