@@ -92,8 +92,11 @@ void ActorFrame::LoadChildrenFromNode( const CString& sDir, const XNode* pNode )
 		FOREACH_CONST_Child( pChildren, pChild )
 		{
 			Actor* pChildActor = ActorUtil::LoadFromActorFile( sDir, pChild );
-			if( pChildActor )
+			if( pChildActor ) {
+				Actor* selfActor = this;
+				pChildActor->SetParent( selfActor );
 				AddChild( pChildActor );
+			}
 		}
 		SortByDrawOrder();
 	}

@@ -98,6 +98,9 @@ public:
 	void UpdateTweening( float fDeltaTime );
 	void CopyTweening( const Actor &from );
 
+	// Parenting
+	Actor* GetParent() { return m_parent; }
+	virtual void SetParent( Actor* pParent ) { m_parent = pParent; }
 
 	CString m_sName;
 
@@ -401,6 +404,8 @@ protected:
 		float		m_fTweenTime;		// seconds between Start and End positions/zooms
 	};
 
+	// Parenting
+	Actor* m_parent = NULL;
 
 	RageVector3	m_baseRotation;
 	RageVector3	m_baseScale;
@@ -628,6 +633,8 @@ public:
 	static int GetEffectRotationY( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationY() ); return 1; }
 	static int GetEffectRotationZ( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationZ() ); return 1; }
 
+	static int GetParent( T* p, lua_State *L ) { p->GetParent()->PushSelf( L ); return 1;  }
+
 
 	static void Register(lua_State *L) {
   		ADD_METHOD( sleep )
@@ -758,6 +765,8 @@ public:
 		ADD_METHOD( GetBaseZoomX )
 		ADD_METHOD( GetSecsIntoEffect )
 		ADD_METHOD( GetEffectDelta )
+
+		ADD_METHOD( GetParent )
 
 		Luna<T>::Register( L );
 	}
