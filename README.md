@@ -191,5 +191,11 @@ cd openitg
   
 
 **Discord RPC** - idk lol
-**New Actor Commands** - `Actor:hascommand(commandName)` and `Actor:removecommand(commandName)` is a thing now
+
+**New Actor Commands** - `Actor:hascommand(commandName)` and `Actor:removecommand(commandName)` is a thing now. Oh also `Actor:GetParent()`
+
 **Actor Get Values now tween** - only applies to `GetZoomX/Y/Z` and `GetRotationX/Y/Z`
+
+**Get actual rotation/position even with effects** - using `GetEffectX/Y/Z/RotationX/RotationY/RotationZ`
+
+**Copy Actors!** - apply attribute `Copy` with an integer value to copy the actor multiple times.

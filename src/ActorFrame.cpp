@@ -93,9 +93,17 @@ void ActorFrame::LoadChildrenFromNode( const CString& sDir, const XNode* pNode )
 		{
 			Actor* pChildActor = ActorUtil::LoadFromActorFile( sDir, pChild );
 			if( pChildActor ) {
-				Actor* selfActor = this;
-				pChildActor->SetParent( selfActor );
-				AddChild( pChildActor );
+				pChildActor->SetParent( this );
+				if ( pChildActor->GetParentCopyAmt() > 0) {
+					int amt = pChildActor->GetParentCopyAmt();
+					while(amt>0) {
+						AddChild( pChildActor->Copy() );
+						amt--;
+					}
+				}
+				else {
+					AddChild(pChildActor);
+				}
 			}
 		}
 		SortByDrawOrder();

@@ -101,6 +101,8 @@ public:
 	// Parenting
 	Actor* GetParent() { return m_parent; }
 	virtual void SetParent( Actor* pParent ) { m_parent = pParent; }
+	const int GetParentCopyAmt() { return m_tempCopy; }
+	virtual void SetParentCopyAmt( int amt ) { m_tempCopy = amt; }
 
 	CString m_sName;
 
@@ -406,6 +408,7 @@ protected:
 
 	// Parenting
 	Actor* m_parent = NULL;
+	int m_tempCopy = 0;
 
 	RageVector3	m_baseRotation;
 	RageVector3	m_baseScale;
@@ -633,7 +636,13 @@ public:
 	static int GetEffectRotationY( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationY() ); return 1; }
 	static int GetEffectRotationZ( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationZ() ); return 1; }
 
-	static int GetParent( T* p, lua_State *L ) { p->GetParent()->PushSelf( L ); return 1;  }
+	static int GetParent( T* p, lua_State *L ) {
+		if ( p->GetParent() )
+			p->GetParent()->PushSelf( L );
+		else
+			lua_pushnil( L );
+		return 1;
+	}
 
 
 	static void Register(lua_State *L) {

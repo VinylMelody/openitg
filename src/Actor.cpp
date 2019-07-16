@@ -178,6 +178,9 @@ void Actor::LoadFromNode( const CString& sDir, const XNode* pNode )
 	// Load Name, if any.
 	pNode->GetAttrValue( "Name", m_sName );
 
+	if ( pNode->GetAttrValue("Copy", m_tempCopy ) ) ASSERT(m_tempCopy >= 0);
+	
+
 
 	float f;
 	if( pNode->GetAttrValue( "BaseRotationXDegrees", f ) )	SetBaseRotationX( f );
