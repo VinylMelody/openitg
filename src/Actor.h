@@ -367,12 +367,19 @@ public:
 	void AddCommand( const CString &sCmdName, apActorCommands apac );
 	void RemoveCommand( const CString &sCmdName );
 	bool HasCommand( const CString &sCmdName );
-	const apActorCommands& GetCommand( const CString &sCommandName ) const;
+	const apActorCommands& GetCommand(const CString &sCommandName) const;
 	virtual void PlayCommand( const CString &sCommandName, Actor *pParent = NULL );
 	virtual void RunCommands( const LuaReference& cmds, Actor *pParent = NULL );
 	void RunCommands( const apActorCommands& cmds, Actor *pParent = NULL ) { this->RunCommands( *cmds, pParent ); }	// convenience
 	// If we're a leaf, then execute this command.
 	virtual void RunCommandsOnLeaves( const LuaReference& cmds, Actor *pParent = NULL ) { RunCommands(cmds,pParent); }
+	
+	//
+	// Attributes
+	//
+	bool HasAttribute( const CString &sAttrName );
+	void AddAttribute( const CString &sAttrName, const CString &sAttrValue );
+	CString GetAttribute( const CString &sAttrName );
 
 	static float GetCommandsLengthSeconds( const LuaReference& cmds );
 	static float GetCommandsLengthSeconds( const apActorCommands& cmds ) { return GetCommandsLengthSeconds( *cmds ); }	// convenience
@@ -396,6 +403,9 @@ public:
 	virtual void SetSecondsIntoAnimation( float fSeconds ) {}
 	virtual void SetUpdateRate( float fRate ) {}
 
+	map<CString, apActorCommands> m_mapNameToCommands;
+	map<CString, CString> m_mapNameToAttribute;
+
 protected:
 
 	struct TweenInfo
@@ -413,7 +423,6 @@ protected:
 	RageVector3	m_baseRotation;
 	RageVector3	m_baseScale;
 	float m_fBaseAlpha;
-
 
 	RageVector2	m_size;
 	TweenState	m_current;
@@ -490,7 +499,6 @@ private:
 	//
 	// commands
 	//
-	map<CString, apActorCommands> m_mapNameToCommands;
 	vector<CString> m_vsSubscribedTo;
 };
 
@@ -636,6 +644,54 @@ public:
 	static int GetEffectRotationY( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationY() ); return 1; }
 	static int GetEffectRotationZ( T* p, lua_State *L ) { lua_pushnumber( L, p->GetEffectRotationZ() ); return 1; }
 
+	static int GetAttribute( T* p, lua_State *L ) {
+		CString sAttribute = SArg(1);
+		if (sAttribute.Right(7).CompareNoCase("Command") != 0) {
+			if (p->HasAttribute(sAttribute)) {
+				lua_pushstring(L, p->GetAttribute(sAttribute));
+				return 1;
+			}
+		}
+		else {
+			if (sAttribute.size() == 7) sAttribute = "On";
+			else sAttribute = sAttribute.Left(sAttribute.size() - 7);
+
+			if (p->HasCommand(sAttribute)) {
+				p->GetCommand(sAttribute)->PushSelf(L);
+				return 1;
+			}
+		}
+		lua_pushnil( L );
+		return 1;
+	}
+	static int GetAttributes( T* p, lua_State *L ) {
+		lua_newtable(L);
+
+		int index = 1;
+
+		// Misc. Attributes
+		map<CString, CString>::const_iterator attr_it = p->m_mapNameToAttribute.begin();
+		while (attr_it != p->m_mapNameToAttribute.end()) {
+			lua_pushnumber(L, index);
+			lua_pushstring(L, attr_it->first);
+			lua_settable(L, -3);
+			attr_it++;
+			index++;
+		}
+
+		// Commands
+		map<CString, apActorCommands>::const_iterator cmd_it = p->m_mapNameToCommands.begin();
+		while (cmd_it != p->m_mapNameToCommands.end()) {
+			lua_pushnumber(L, index	);
+			lua_pushstring(L, cmd_it->first + "Command");
+			lua_settable(L, -3);
+			cmd_it++;
+			index++;
+		}
+
+		return 1;
+	}
+
 	static int GetParent( T* p, lua_State *L ) {
 		if ( p->GetParent() )
 			p->GetParent()->PushSelf( L );
@@ -776,6 +832,8 @@ public:
 		ADD_METHOD( GetEffectDelta )
 
 		ADD_METHOD( GetParent )
+		ADD_METHOD( GetAttribute )
+		ADD_METHOD( GetAttributes )
 
 		Luna<T>::Register( L );
 	}

@@ -145,6 +145,7 @@ Actor::Actor( const Actor &cpy ):
 	CPY( m_CullMode );
 
 	CPY( m_mapNameToCommands );
+	CPY( m_mapNameToAttribute );
 #undef CPY
 }
 
@@ -198,8 +199,11 @@ void Actor::LoadFromNode( const CString& sDir, const XNode* pNode )
 	{
 		CString sKeyName = a->m_sName; /* "OnCommand" */
 
-		if( sKeyName.Right(7).CompareNoCase("Command") != 0 )
-			continue; /* not a command */
+		if( sKeyName.Right(7).CompareNoCase("Command") != 0 ) {
+			/* not a command */
+			AddAttribute( a->m_sName, a->m_sValue );
+			continue; 
+		}
 
 		CString sValue = a->m_sValue;
 		THEME->EvaluateString( sValue );
@@ -211,6 +215,7 @@ void Actor::LoadFromNode( const CString& sDir, const XNode* pNode )
 			sCmdName="On";
 		else
 			sCmdName = sKeyName.Left( sKeyName.size()-7 );
+
 		AddCommand( sCmdName, apac );
 	}
 
@@ -1092,6 +1097,25 @@ void Actor::QueueMessage( const CString& sMessageName )
 	DestTweenState().sCommandName = "!" + sMessageName;
 }
 
+bool Actor::HasAttribute( const CString &sAttrName ) {
+	map<CString, CString>::const_iterator it = m_mapNameToAttribute.find( sAttrName );
+	return it != m_mapNameToAttribute.end();
+}
+void Actor::AddAttribute( const CString &sAttrName, const CString &sAttrValue ) {
+	if( HasAttribute(sAttrName) )
+	{
+		CString sWarning = m_sName+"'s attribute '"+sAttrName+"' defined twice";
+		Dialog::OK( sWarning, "ATTRIBUTE_DEFINED_TWICE" );
+	}
+
+	m_mapNameToAttribute[ sAttrName ] = sAttrValue;
+}
+CString Actor::GetAttribute( const CString &sAttrName ) {
+	map<CString, CString>::const_iterator it = m_mapNameToAttribute.find( sAttrName );
+	ASSERT( it != m_mapNameToAttribute.end() );
+	return it->second;
+}
+
 void Actor::AddCommand( const CString &sCmdName, apActorCommands apac )
 {
 	if( HasCommand(sCmdName) )
@@ -1138,7 +1162,7 @@ bool Actor::HasCommand( const CString &sCmdName )
 	return it != m_mapNameToCommands.end();
 }
 
-const apActorCommands& Actor::GetCommand( const CString &sCommandName ) const
+const apActorCommands& Actor::GetCommand(const CString &sCommandName) const
 {
 	map<CString, apActorCommands>::const_iterator it = m_mapNameToCommands.find( sCommandName );
 	ASSERT( it != m_mapNameToCommands.end() );
